@@ -1,7 +1,9 @@
 class ActiveRecord::Relation
   def to_comma(style = :default)
     iterator_method =
-      if arel.ast.limit || !arel.ast.orders.empty?
+      if defined?(ActiveRecord::FindInBatchesWithOrder)
+        :find_each_with_order
+      elsif arel.ast.limit || !arel.ast.orders.empty?
         Rails.logger.warn "#to_comma is being used on a relation with limit or order clauses. Falling back to iterating with :each. This can cause performance issues." if defined?(Rails)
         :each
       else

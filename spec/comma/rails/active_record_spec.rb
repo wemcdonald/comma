@@ -89,6 +89,14 @@ if defined? ActiveRecord
         scope.to_comma
       end
 
+      it 'should use FindInBatchesWithOrder if available' do
+        module ActiveRecord::FindInBatchesWithOrder
+        end
+        scope = Person.teenagers
+        scope.should_receive(:find_each_with_order).and_yield @person
+        scope.to_comma
+      end
+
       it 'should fall back to iterating with each when scope has limit clause' do
         scope = Person.limit(1)
         scope.should_receive(:each).and_yield @person
